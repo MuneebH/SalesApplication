@@ -1,0 +1,47 @@
+/**
+ * 
+ */
+package com.b07.users;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import com.b07.database.DatabaseInserter;
+import com.b07.database.UserIdInvalidException;
+import com.b07.database.helper.DatabaseDriverHelper;
+import com.b07.database.helper.DatabaseSelectHelper;
+import com.b07.database.helper.DatabaseUpdateHelper;
+import com.b07.exceptions.AddressTooLongException;
+import com.b07.exceptions.DatabaseInsertException;
+import com.b07.exceptions.RoleIdInvalidException;
+
+/**
+ * @author Muneeb
+ *
+ */
+public class Admin extends Employee {
+
+  public Admin() {
+    super();
+  }
+
+  public Admin(int id, String name, int age, String address)
+      throws AddressTooLongException, DatabaseInsertException, SQLException {
+    super(id, name, age, address);
+  }
+
+  public Admin(int id, String name, int age, String address, boolean authenticated)
+      throws AddressTooLongException, DatabaseInsertException, SQLException,
+      UserIdInvalidException {
+    super(id, name, age, address, authenticated);
+  }
+
+  public boolean promoteEmployee(Employee employee) throws SQLException, UserIdInvalidException,
+      RoleIdInvalidException, AddressTooLongException, DatabaseInsertException {
+    // change the employee's role in the database to admin
+    // should terminate the employee object
+    employee =
+        new Admin(employee.getId(), employee.getName(), employee.getAge(), employee.getAddress());
+    boolean result = DatabaseUpdateHelper.updateUserRole(employee.getRoleId(), employee.getId());
+    return result;
+  }
+}

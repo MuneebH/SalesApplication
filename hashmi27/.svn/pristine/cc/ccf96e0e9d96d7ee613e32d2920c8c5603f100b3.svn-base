@@ -1,0 +1,89 @@
+package com.b07.users;
+
+import java.sql.SQLException;
+import com.b07.database.UserIdInvalidException;
+import com.b07.database.helper.DatabaseInsertHelper;
+import com.b07.database.helper.DatabaseSelectHelper;
+import com.b07.exceptions.AddressTooLongException;
+import com.b07.exceptions.DatabaseInsertException;
+import com.b07.security.PasswordHelpers;
+
+public abstract class User {
+
+  private int id;
+  private String name;
+  private int age;
+  private int roleId;
+  private boolean authenticated;
+  private String address;
+
+  public User() {}
+
+  public User(int id, String name, int age, String address)
+      throws AddressTooLongException, DatabaseInsertException, SQLException {
+    this.id = id;
+    this.name = name;
+    this.age = age;
+    this.setAddress(address);
+    String password = "default"; // make default password
+    DatabaseInsertHelper.insertNewUser(name, age, address, password);
+  }
+
+  public User(int id, String name, int age, String address, boolean authenticated)
+      throws AddressTooLongException, DatabaseInsertException, SQLException,
+      UserIdInvalidException {
+    this.id = id;
+    this.name = name;
+    this.age = age;
+    this.authenticated = authenticated;
+
+    String password = DatabaseSelectHelper.getPassword(id);
+    DatabaseInsertHelper.insertNewUser(name, age, address, password);
+  }
+
+  public int getId() {
+    return this.id;
+  }
+
+  public void setId(int id) {
+    this.id = id;
+  }
+
+  public void setRoleId(int id) {
+    this.roleId = id;
+  }
+
+  public String getName() {
+    return this.name;
+  }
+
+  public void setName(String nom) {
+    this.name = nom;
+  }
+
+  public int getAge() {
+    return this.age;
+  }
+
+  public void setAge(int old) {
+    this.age = old;
+  }
+
+  public int getRoleId() {
+    return this.roleId;
+  }
+
+  public final boolean authenticate(String password) {
+    String hashedP = PasswordHelpers.passwordHash(password);
+    authenticated = PasswordHelpers.comparePassword(hashedP, password);
+    return authenticated;
+  }
+
+  public String getAddress() {
+    return address;
+  }
+
+  public void setAddress(String address) {
+    this.address = address;
+  }
+}
